@@ -1,0 +1,34 @@
+.user_card {
+  border: #ffde7a 2px solid;
+  width: auto;
+  background-color: #171717;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  margin: 20px;
+}
+.user_card > div:first-child {
+  display: flex;
+  flex-direction: row;
+}
+.user_card > div:first-child > img {
+  width: 100px;
+  height: 100px;
+  margin: 0 20px 0 0;
+  object-fit: cover;
+}
+.user_card > div:first-child > div:nth-child(2) > div {
+  margin-bottom: 20px;
+}
+.user_card > div:first-child > div:nth-child(2) > div:first-child {
+  font-weight: 500;
+  font-size: 1.3rem;
+}
+.user_card > div:first-child > div:nth-child(2) > div:nth-child(2) {
+  overflow-wrap: anywhere;
+}
+
+/*# sourceMappingURL=user.css.map */

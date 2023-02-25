@@ -18,6 +18,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Local apps
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -86,3 +89,6 @@ STATICFILES_DIRS = (
 )
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MATRIX_ADMIN_TOKEN = env('MATRIX_ADMIN_TOKEN')
+MATRIX_DOMAIN = env('MATRIX_DOMAIN')

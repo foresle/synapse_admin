@@ -1,0 +1,7 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    {% for user in users %}
+        {% include 'users/user_card.html' %}
+    {% endfor %}
+{% endblock %}
