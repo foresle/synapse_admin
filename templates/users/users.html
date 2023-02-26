@@ -1,6 +1,21 @@
 {% extends '_base.html' %}
 
 {% block content %}
+    <div class="sort_form">
+      <form method="get" action="{% url 'users:list' %}">
+        <div>
+          <select name="sort_by" id="sort_by">
+            <option value="-creation_date" {% if sort_by == "-creation_date" %}selected{% endif %}>Creation date (Newer - Older)</option>
+            <option value="creation_date" {% if sort_by == "creation_date" %}selected{% endif %}>Creation date (Older -Newer)</option>
+            <option value="-last_seen" {% if sort_by == "-last_seen" %}selected{% endif %}>Last seen (Newer - Older)</option>
+            <option value="last_seen" {% if sort_by == "last_seen" %}selected{% endif %}>Last seen (Older - Newer)</option>
+            <option value="-name" {% if sort_by == "-name" %}selected{% endif %}>Name (Z-A)</option>
+            <option value="name" {% if sort_by == "name" %}selected{% endif %}>Name (A-Z)</option>
+          </select>
+        </div>
+        <div><button type="submit">Sort</button></div>
+      </form>
+    </div>
     {% for user in users %}
         {% include 'users/user_card.html' %}
     {% endfor %}
