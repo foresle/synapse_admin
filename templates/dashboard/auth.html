@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div id="auth">
+        <div>
+            <div>
+                <div>Your token: </div>
+                <div><input disabled type="password" value="{{ access_token }}"></div>
+            </div>
+            <div>Is invalid: {{ access_token_invalid|default:'False' }}</div>
+        </div>
+        <div>
+            <div>Go to <a href="{% url 'dashboard:dashboard' %}">dashboard</a>?</div>
+        </div>
+    </div>
+{% endblock %}

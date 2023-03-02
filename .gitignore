@@ -2,3 +2,5 @@
 /.idea/
 .env
 db.sqlite3
+/staticfiles/
+/dump.rdb

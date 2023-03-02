@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="{% static 'main/forms.css' %}">
 
     <link rel="stylesheet" href="{% static 'users/user.css' %}">
+
+    <link rel="stylesheet" href="{% static 'dashboard/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
 </head>
 <body>
     <div>
@@ -22,5 +25,8 @@
 
         {% endblock %}
     </div>
+    {% block optional_scripts %}
+    
+    {% endblock %}
 </body>
 </html>

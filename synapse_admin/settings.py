@@ -21,6 +21,7 @@ INSTALLED_APPS = [
 
     # Local apps
     'users.apps.UsersConfig',
+    'dashboard.apps.DashboardConfig',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +79,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 USE_I18N = True
 USE_TZ = True
 
@@ -92,3 +93,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MATRIX_ADMIN_TOKEN = env('MATRIX_ADMIN_TOKEN')
 MATRIX_DOMAIN = env('MATRIX_DOMAIN')
+
+# Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': env('REDIS_LOCATION', default='redis://redis:6379/'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+

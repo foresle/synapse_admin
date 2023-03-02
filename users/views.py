@@ -4,7 +4,8 @@ from django.views.generic import TemplateView
 from django.conf import settings
 import requests
 
-from .helpers import assemble_mxc_url, get_download_url_for_media, get_last_seen
+from .helpers import get_last_seen
+from synapse_admin.helpers import assemble_mxc_url, get_download_url_for_media
 
 
 class UsersView(TemplateView):
@@ -36,7 +37,7 @@ class UsersView(TemplateView):
 
             # Get last seen ts
             if sort_by in ('last_seen', '-last_seen'):
-                last_seen_ts = get_last_seen(
+                last_seen_ts, device_name = get_last_seen(
                     access_token=settings.MATRIX_ADMIN_TOKEN,
                     server_name=settings.MATRIX_DOMAIN,
                     user_id=user['name']
@@ -50,6 +51,7 @@ class UsersView(TemplateView):
                 last_seen_date = datetime.fromtimestamp(last_seen_ts)
 
                 user['last_seen_date'] = last_seen_date
+                user['device_name'] = device_name
 
         # Sort by name
         if sort_by == 'name':

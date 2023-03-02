@@ -1,0 +1,21 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+    <div id="map">
+
+    </div>
+    <div class="info_box">
+        <div>displayed 5 last created users</div>
+        <div><a href="{% url 'users:list' %}">all users</a></div>
+    </div>
+    {% for user in users %}
+        {% include 'users/user_card.html' %}
+    {% endfor %}
+{% endblock %}
+
+{% block optional_scripts %}
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script type="text/javascript" src="{% static 'dashboard/map.js' %}"></script>
+    <script type="text/javascript">setMapFromJson(String.raw`{{ map|safe }}`);</script>
+{% endblock %}

@@ -2,9 +2,9 @@
     <div>
         <img src="{{ user.avatar_url|default:'https://cdn3.emoji.gg/emojis/2935-cold-doge.png' }}" alt="{{ user.name }}">
         <div>
-            <div>{{ user.displayname }}</div>
+            <div>{{ user.display_name }}</div>
             <div>{{ user.name }}</div>
-            <div>{{ user.last_seen_date }}</div>
+            <div>{{ user.last_seen_date }} from {{ user.device_name }}</div>
         </div>
     </div>
 </div>
