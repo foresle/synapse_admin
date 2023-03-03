@@ -4,7 +4,9 @@
         <div>
             <div>{{ user.display_name }}</div>
             <div>{{ user.name }}</div>
-            <div>{{ user.last_seen_date }} from {{ user.device_name }}</div>
+            <div>{{ user.last_seen_device.last_seen_ts }}</div>
+            <div>{{ user.last_seen_device.last_seen_ip }}</div>
+            <div>{{ user.last_seen_device.name }}</div>
         </div>
     </div>
 </div>

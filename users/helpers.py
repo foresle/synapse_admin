@@ -1,32 +1,47 @@
+from datetime import datetime
 import requests
 from django.core.cache import cache
 
 from synapse_admin.helpers import assemble_mxc_url, get_download_url_for_media
 
 
-def get_last_seen(access_token: str, server_name: str, user_id: str) -> (None | int, None | str):
-    response = requests.get(url=f'https://{server_name}/_synapse/admin/v2/users/{user_id}/devices',
+def load_user_devices(access_token: str, server_name: str, username: str) -> list:
+    """
+    Load devices for user, includes:
+     - Device name
+     - Last seen
+     - Device IP
+    """
+    devices = []
+
+    response = requests.get(url=f'https://{server_name}/_synapse/admin/v2/users/{username}/devices',
                             headers={
                                 'Authorization': f'Bearer {access_token}'
                             })
 
     if response.status_code != 200:
-        return None, None
+        return devices
 
     response = response.json()
     if response['total'] == 0:
-        return None, None
+        return devices
 
-    devices = response['devices']
-
-    # Delete devices without last_seen_ts
-    for device in devices:
+    for device in response['devices']:
+        # If ts is None set default
         if device['last_seen_ts'] is None:
-            return None, None
+            device['last_seen_ts'] = 946684800
+        else:
+            device['last_seen_ts'] = device['last_seen_ts'] / 1000
 
-    devices = sorted(devices, key=lambda k: k['last_seen_ts'], reverse=True)
+        devices.append({
+            'id': device['device_id'],
+            'name': device['display_name'],
+            'user_agent': device['last_seen_user_agent'],
+            'last_seen_ts': datetime.fromtimestamp(device['last_seen_ts']),
+            'last_seen_ip': device['last_seen_ip']
+        })
 
-    return devices[0]['last_seen_ts'], devices[0]['display_name']
+    return devices
 
 
 def load_users(access_token: str, server_name: str) -> bool:
@@ -57,7 +72,7 @@ def load_users(access_token: str, server_name: str) -> bool:
             'display_name': user['displayname'],
             'admin': user['admin'],
             'deactivated': user['deactivated'],
-            'creation_ts': user['creation_ts'],
+            'creation_ts': datetime.fromtimestamp(user['creation_ts'] / 1000),
             'avatar_url': user['avatar_url']
         }
 
@@ -72,6 +87,27 @@ def load_users(access_token: str, server_name: str) -> bool:
             media_id=mxc_url[1],
             access_token=access_token
         )
+
+    # Load users devices
+    for user in users.values():
+        user['devices'] = load_user_devices(
+            access_token=access_token,
+            server_name=server_name,
+            username=user['name']
+        )
+
+        # Find last seen device
+        devices = sorted(user['devices'], key=lambda k: k['last_seen_ts'], reverse=True)
+        if len(devices) > 0:
+            user['last_seen_device'] = devices[0]
+        else:
+            user['last_seen_device'] = {
+                'id': 'Unknown',
+                'name': 'Unknown',
+                'user_agent': 'Unknown',
+                'last_seen_ts': datetime.fromtimestamp(946684800),
+                'last_seen_ip': 'Unknown'
+            }
 
     cache.set('users', users, 60 * 60 * 60 * 24)
 
