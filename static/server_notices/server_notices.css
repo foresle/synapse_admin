@@ -1,0 +1,37 @@
+#service_notices_send {
+  display: flex;
+  flex-direction: column;
+  border: #ffde7a 2px solid;
+  width: auto;
+  background-color: #171717;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin: 20px;
+}
+#service_notices_send > form > div {
+  padding: 10px;
+}
+#service_notices_send .server_notice_results {
+  border-collapse: collapse;
+  border: #ffde7a 2px solid;
+}
+#service_notices_send .server_notice_results th, #service_notices_send .server_notice_results td, #service_notices_send .server_notice_results tr {
+  border: #ffde7a 2px solid;
+}
+#service_notices_send .server_notice_results th, #service_notices_send .server_notice_results td {
+  padding: 5px;
+  text-align: left;
+}
+#service_notices_send textarea {
+  border: #ffde7a 2px solid;
+  background: #171717;
+  width: 100%;
+  max-width: 400px;
+  min-width: 400px;
+  padding: 10px;
+  font-size: 1.2rem;
+}
+
+/*# sourceMappingURL=server_notices.css.map */

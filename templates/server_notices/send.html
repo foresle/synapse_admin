@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div id="service_notices_send">
+        <form method="post">{% csrf_token %}
+            <div>Write text (possible in MarkDown) here:</div>
+            <div>{{ form.payload }}</div>
+            <div><button type="submit">Send</button></div>
+            {% if last_server_notice is not None %}
+                <div>Last server notice:</div>
+                <div>{{ last_server_notice.sending_at }}</div>
+                <div>{{ last_server_notice.payload }}</div>
+                <div>
+                    <table class="server_notice_results">
+                        <tr>
+                            <th>User</th>
+                            <th>Sending result</th>
+                        </tr>
+                        {% for user_result in last_server_notice.result.items %}
+                        <tr>
+                            <td>{{ user_result.0 }}</td>
+                            <td>{{ user_result.1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}

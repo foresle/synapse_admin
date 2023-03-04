@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     # Local apps
     'users.apps.UsersConfig',
     'dashboard.apps.DashboardConfig',
+    'server_notices.apps.ServerNoticesConfig',
 ]
 
 MIDDLEWARE = [

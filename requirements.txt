@@ -3,3 +3,4 @@ environs>=9.5.0
 requests>=2.28.2
 django-redis
 synapse-graph
+Markdown>=3.4.1
