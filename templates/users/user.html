@@ -1,0 +1,36 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div class="user">
+        <img src="{{ user.avatar_url|default:'https://cdn3.emoji.gg/emojis/2935-cold-doge.png' }}" alt="{{ user.name }}">
+        <div>
+            <div>{{ user.display_name }}</div>
+            <div>{{ user.name }}</div>
+            <div>Created: {{ user.creation_ts }}</div>
+            <div>Is admin: {{ user.admin }}</div>
+            <div>Is deactivated: {{ user.deactivated }}</div>
+            <div>Last seen:</div>
+            <div>{{ user.last_seen_device.last_seen_ts }}</div>
+            <div>{{ user.last_seen_device.last_seen_ip }}</div>
+            <div>{{ user.last_seen_device.name }}</div>
+        </div>
+        <table class="devices">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>User Agent</th>
+                <th>Last seen</th>
+                <th>IP</th>
+            </tr>
+            {% for device in user.devices %}
+                <tr>
+                    <td>{{ device.id }}</td>
+                    <td>{{ device.name }}</td>
+                    <td>{{ device.user_agent }}</td>
+                    <td>{{ device.last_seen_ts }}</td>
+                    <td>{{ device.last_seen_ip }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

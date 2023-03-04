@@ -31,4 +31,43 @@
   overflow-wrap: anywhere;
 }
 
+.user {
+  border: #ffde7a 2px solid;
+  width: auto;
+  background-color: #171717;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 10px;
+  margin: 20px;
+}
+.user > img {
+  width: 100%;
+  max-width: 400px;
+  margin: 10px;
+}
+.user > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+}
+.user > div:nth-child(2) > div {
+  padding: 10px;
+  font-size: 1.2rem;
+}
+
+.devices {
+  margin: 10px;
+  border-collapse: collapse;
+  border: #ffde7a 2px solid;
+}
+.devices th, .devices td, .devices tr {
+  border: #ffde7a 2px solid;
+}
+.devices th, .devices td {
+  padding: 5px;
+  text-align: left;
+}
+
 /*# sourceMappingURL=user.css.map */

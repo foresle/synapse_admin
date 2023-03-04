@@ -15,6 +15,7 @@
         </div>
         <div><button type="submit">Sort</button></div>
       </form>
+        <div><a href="{% url 'users:update_last_seen' %}">update_last_seen</a></div>
     </div>
     {% for user in users %}
         {% include 'users/user_card.html' %}
