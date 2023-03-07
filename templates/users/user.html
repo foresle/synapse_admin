@@ -10,7 +10,7 @@
             <div>Is admin: {{ user.admin }}</div>
             <div>Is deactivated: {{ user.deactivated }}</div>
             <div>Last seen: {{ user.last_seen_device.last_seen_ts }} from {{ user.last_seen_device.name }}</div>
-            <div>IP: {{ user.last_seen_device.last_seen_ip }}</div>
+            <div>IP: {{ user.last_seen_device.last_seen_ip }} - {{ user.last_seen_device.country_by_ip }}</div>
         </div>
         <div class="table_wrapper">
             <table>
@@ -28,7 +28,7 @@
                         <td>{{ device.name }}</td>
                         <td>{{ device.user_agent }}</td>
                         <td>{{ device.last_seen_ts }}</td>
-                        <td>{{ device.last_seen_ip }}</td>
+                        <td>{{ device.last_seen_ip }} - {{ user.last_seen_device.country_by_ip }}</td>
                     </tr>
                 {% endfor %}
             </table>

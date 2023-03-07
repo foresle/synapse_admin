@@ -1,8 +1,21 @@
 from datetime import datetime
 import requests
 from django.core.cache import cache
+import flag
 
 from synapse_admin.helpers import assemble_mxc_url, get_download_url_for_media
+
+
+def get_country_by_ip(ip: str) -> str:
+    country: str
+
+    response = requests.get(f'https://api.country.is/{ip}')
+    if response.status_code != 200:
+        return 'Unknown'
+
+    country = flag.flag(response.json()['country'])
+
+    return country
 
 
 def load_user_devices(access_token: str, server_name: str, username: str) -> list:
@@ -38,7 +51,8 @@ def load_user_devices(access_token: str, server_name: str, username: str) -> lis
             'name': device['display_name'],
             'user_agent': device['last_seen_user_agent'],
             'last_seen_ts': datetime.fromtimestamp(device['last_seen_ts']),
-            'last_seen_ip': device['last_seen_ip']
+            'last_seen_ip': device['last_seen_ip'],
+            'country_by_ip': get_country_by_ip(device['last_seen_ip'])
         })
 
     return devices
@@ -106,7 +120,8 @@ def load_users(access_token: str, server_name: str) -> bool:
                 'name': 'Unknown',
                 'user_agent': 'Unknown',
                 'last_seen_ts': datetime.fromtimestamp(946684800),
-                'last_seen_ip': 'Unknown'
+                'last_seen_ip': 'Unknown',
+                'country_by_ip': 'Unknown'
             }
 
     cache.set('users', users, 60 * 60 * 60 * 24)
