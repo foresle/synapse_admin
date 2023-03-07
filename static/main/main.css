@@ -48,6 +48,26 @@ body > div * {
   font-size: 1.3em;
 }
 
+.table_wrapper {
+  overflow-x: auto;
+  width: auto;
+}
+.table_wrapper table {
+  border-collapse: collapse;
+  border: #ffde7a 2px solid;
+}
+.table_wrapper table caption {
+  font-size: 1.2rem;
+  margin: 10px;
+}
+.table_wrapper table th, .table_wrapper table td, .table_wrapper table tr {
+  border: #ffde7a 2px solid;
+}
+.table_wrapper table th, .table_wrapper table td {
+  padding: 5px;
+  text-align: left;
+}
+
 @media screen and (min-width: 768px) {
   body > div {
     width: 60%;

@@ -57,17 +57,4 @@
   font-size: 1.2rem;
 }
 
-.devices {
-  margin: 10px;
-  border-collapse: collapse;
-  border: #ffde7a 2px solid;
-}
-.devices th, .devices td, .devices tr {
-  border: #ffde7a 2px solid;
-}
-.devices th, .devices td {
-  padding: 5px;
-  text-align: left;
-}
-
 /*# sourceMappingURL=user.css.map */

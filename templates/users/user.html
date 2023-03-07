@@ -9,28 +9,29 @@
             <div>Created: {{ user.creation_ts }}</div>
             <div>Is admin: {{ user.admin }}</div>
             <div>Is deactivated: {{ user.deactivated }}</div>
-            <div>Last seen:</div>
-            <div>{{ user.last_seen_device.last_seen_ts }}</div>
-            <div>{{ user.last_seen_device.last_seen_ip }}</div>
-            <div>{{ user.last_seen_device.name }}</div>
+            <div>Last seen: {{ user.last_seen_device.last_seen_ts }} from {{ user.last_seen_device.name }}</div>
+            <div>IP: {{ user.last_seen_device.last_seen_ip }}</div>
         </div>
-        <table class="devices">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>User Agent</th>
-                <th>Last seen</th>
-                <th>IP</th>
-            </tr>
-            {% for device in user.devices %}
+        <div class="table_wrapper">
+            <table>
+                <caption>Devices</caption>
                 <tr>
-                    <td>{{ device.id }}</td>
-                    <td>{{ device.name }}</td>
-                    <td>{{ device.user_agent }}</td>
-                    <td>{{ device.last_seen_ts }}</td>
-                    <td>{{ device.last_seen_ip }}</td>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>User Agent</th>
+                    <th>Last seen</th>
+                    <th>IP</th>
                 </tr>
-            {% endfor %}
-        </table>
+                {% for device in user.devices %}
+                    <tr>
+                        <td>{{ device.id }}</td>
+                        <td>{{ device.name }}</td>
+                        <td>{{ device.user_agent }}</td>
+                        <td>{{ device.last_seen_ts }}</td>
+                        <td>{{ device.last_seen_ip }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
 {% endblock %}
