@@ -4,7 +4,7 @@ from django.core.cache import cache
 
 def check_auth(func):
     def wrapper(*args, **kwargs):
-        value = cache.get('auth_checked')
+        value = cache.get('init_completed')
 
         if value is None:
             value = False
@@ -14,6 +14,6 @@ def check_auth(func):
         if value:
             return func(*args, **kwargs)
         else:
-            return redirect('dashboard:auth')
+            return redirect('dashboard:init')
 
     return wrapper

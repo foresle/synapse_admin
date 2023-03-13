@@ -1,23 +1,23 @@
 {% extends '_base.html' %}
 
 {% block content %}
-    <div class="sort_form">
-      <form method="get" action="{% url 'users:list' %}">
-        <div>
-          <select name="sort_by" id="sort_by">
-            <option value="-creation_date" {% if sort_by == "-creation_date" %}selected{% endif %}>Creation date (Newer - Older)</option>
-            <option value="creation_date" {% if sort_by == "creation_date" %}selected{% endif %}>Creation date (Older -Newer)</option>
-            <option value="-last_seen" {% if sort_by == "-last_seen" %}selected{% endif %}>Last seen (Newer - Older)</option>
-            <option value="last_seen" {% if sort_by == "last_seen" %}selected{% endif %}>Last seen (Older - Newer)</option>
-            <option value="-name" {% if sort_by == "-name" %}selected{% endif %}>Name (Z-A)</option>
-            <option value="name" {% if sort_by == "name" %}selected{% endif %}>Name (A-Z)</option>
-          </select>
-        </div>
-        <div><button type="submit">Sort</button></div>
-      </form>
-        <div><a href="{% url 'users:update_last_seen' %}">update_last_seen</a></div>
+    <div class="container d-flex m-2">
+        <form method="get" action="{% url 'users:list' %}">
+            <select name="sort_by" id="sort_by" class="form-select m-2">
+                <option value="-creation_date" {% if sort_by == "-creation_date" %}selected{% endif %}>Creation date (Newer - Older)</option>
+                <option value="creation_date" {% if sort_by == "creation_date" %}selected{% endif %}>Creation date (Older -Newer)</option>
+                <option value="-last_seen" {% if sort_by == "-last_seen" %}selected{% endif %}>Last seen (Newer - Older)</option>
+                <option value="last_seen" {% if sort_by == "last_seen" %}selected{% endif %}>Last seen (Older - Newer)</option>
+                <option value="-name" {% if sort_by == "-name" %}selected{% endif %}>Name (Z-A)</option>
+                <option value="name" {% if sort_by == "name" %}selected{% endif %}>Name (A-Z)</option>
+            </select>
+            <button type="submit" class="form-control m-2">Sort</button>
+        </form>
     </div>
-    {% for user in users %}
-        {% include 'users/user_card.html' %}
-    {% endfor %}
+    <div><a href="{% url 'users:update_last_seen' %}">update_last_seen</a></div>
+    <div class="container flex-wrap d-flex justify-content-evenly">
+        {% for user in users %}
+            {% include 'users/user_card.html' %}
+        {% endfor %}
+    </div>
 {% endblock %}

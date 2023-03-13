@@ -1,12 +1,18 @@
-<div class="user_card">
-    <div>
-        <img src="{{ user.avatar_url|default:'https://cdn3.emoji.gg/emojis/2935-cold-doge.png' }}" alt="{{ user.name }}">
-        <div>
-            <div>{{ user.display_name }}</div>
-            <div><a href="{% url 'users:detail' user_id=user.name %}">{{ user.name }}</a></div>
-            <div>{{ user.last_seen_device.last_seen_ts }}</div>
-            <div>{{ user.last_seen_device.last_seen_ip }} - {{ user.last_seen_device.country_by_ip }}</div>
-            <div>{{ user.last_seen_device.name }}</div>
-        </div>
+<div class="card m-2" style="width: 18rem;">
+    <img src="{{ user.avatar_url|default:'https://cdn3.emoji.gg/emojis/2935-cold-doge.png' }}" class="card-img-top" alt="{{ user.name }}">
+    <div class="card-body">
+        <h5 class="card-title">{{ user.display_name }}</h5>
+        <p class="card-text">{{ user.name }}</p>
+    </div>
+    <div class="card-body">
+        <p class="card-text">Last seen:</p>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">{{ user.last_seen_device.last_seen_ts }}</li>
+            <li class="list-group-item">{{ user.last_seen_device.last_seen_ip }} - {{ user.last_seen_device.country_by_ip }}</li>
+            <li class="list-group-item">{{ user.last_seen_device.name }}</li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <a href="{% url 'users:detail' user_id=user.name %}" class="btn btn-primary">See details</a>
     </div>
 </div>
