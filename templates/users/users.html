@@ -1,23 +1,44 @@
 {% extends '_base.html' %}
 
 {% block content %}
-    <div class="container d-flex m-2">
-        <form method="get" action="{% url 'users:list' %}">
-            <select name="sort_by" id="sort_by" class="form-select m-2">
-                <option value="-creation_date" {% if sort_by == "-creation_date" %}selected{% endif %}>Creation date (Newer - Older)</option>
-                <option value="creation_date" {% if sort_by == "creation_date" %}selected{% endif %}>Creation date (Older -Newer)</option>
-                <option value="-last_seen" {% if sort_by == "-last_seen" %}selected{% endif %}>Last seen (Newer - Older)</option>
-                <option value="last_seen" {% if sort_by == "last_seen" %}selected{% endif %}>Last seen (Older - Newer)</option>
-                <option value="-name" {% if sort_by == "-name" %}selected{% endif %}>Name (Z-A)</option>
-                <option value="name" {% if sort_by == "name" %}selected{% endif %}>Name (A-Z)</option>
-            </select>
-            <button type="submit" class="form-control m-2">Sort</button>
-        </form>
+    <div class="container d-flex flex-wrap m-2 p-2 bg-dark rounded">
+        <div class="w-50">
+            <form method="get" action="{% url 'users:list' %}" class="container d-flex flex-columns justify-content-start">
+                <select name="sort_by" id="sort_by" class="form-select w-50 m-2 bg-dark">
+                    <option value="-creation_date" {% if sort_by == "-creation_date" %}selected{% endif %}>Creation date (Newer - Older)</option>
+                    <option value="creation_date" {% if sort_by == "creation_date" %}selected{% endif %}>Creation date (Older -Newer)</option>
+                    <option value="-last_seen" {% if sort_by == "-last_seen" %}selected{% endif %}>Last seen (Newer - Older)</option>
+                    <option value="last_seen" {% if sort_by == "last_seen" %}selected{% endif %}>Last seen (Older - Newer)</option>
+                    <option value="-name" {% if sort_by == "-name" %}selected{% endif %}>Name (Z-A)</option>
+                    <option value="name" {% if sort_by == "name" %}selected{% endif %}>Name (A-Z)</option>
+                </select>
+                <button type="submit" class="form-control w-50 m-2 bg-dark">Sort</button>
+            </form>
+        </div>
+        <div class="w-50"><a class="m-2 btn btn-outline-danger btn-dark" href="{% url 'users:update_last_seen' %}">Update last seen info</a></div>
     </div>
-    <div><a href="{% url 'users:update_last_seen' %}">update_last_seen</a></div>
-    <div class="container flex-wrap d-flex justify-content-evenly">
-        {% for user in users %}
-            {% include 'users/user_card.html' %}
-        {% endfor %}
+    <div class="container m-2 table-responsive p-2 bg-dark rounded">
+        <table class="table table-dark align-middle">
+            <tr>
+                <th>NAME</th>
+                <th>PUBLIC NAME</th>
+                <th>CREATED AT</th>
+                <th>LAST SEEN AT</th>
+                <th>IS DEACTIVATED</th>
+                <th>IS ADMIN</th>
+                <th>AVATAR</th>
+            </tr>
+            {% for user in users %}
+                <tr>
+                    <th><a class="link-light" href="{% url 'users:detail' user_id=user.name %}">{{ user.name|truncatechars:30 }}</a></th>
+                    <td>{{ user.display_name }}</td>
+                    <td>{{ user.created_at}}</td>
+                    <td>{{ user.last_seen_device.last_seen_ts }}</td>
+                    <td>{% if user.is_deactivated == True %} Yes {% else %} No {% endif %}</td>
+                    <td>{% if user.is_admin == True %} Yes {% else %} No {% endif %}</td>
+                    <td class="d-flex justify-content-center"><img src="{{ user.avatar_url|default:'https://cdn3.emoji.gg/emojis/2935-cold-doge.png' }}" alt="{{ user.name }}" style="object-fit: cover;" width="60px" height="60px" class="rounded"></td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 {% endblock %}

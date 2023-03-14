@@ -1,3 +1,6 @@
+from django.conf import settings
+
+
 def assemble_mxc_url(mxc_url: str) -> (str, str):
     """
     Return parsed mxc url:
@@ -8,9 +11,15 @@ def assemble_mxc_url(mxc_url: str) -> (str, str):
     return tuple(mxc_url[6:].split('/'))
 
 
-def get_download_url_for_media(server_name: str, media_id: str, access_token: str) -> str:
+def get_download_url_for_media(media_id: str, server_name: str | None = None, access_token: str | None = None) -> str:
     """
     Return link to original media file.
     """
+
+    if server_name is None:
+        server_name = settings.MATRIX_DOMAIN
+
+    if access_token is None:
+        access_token = settings.MATRIX_ADMIN_TOKEN
 
     return f'https://{server_name}/_matrix/media/v3/download/{server_name}/{media_id}?access_token={access_token}'

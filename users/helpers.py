@@ -1,9 +1,83 @@
+from dataclasses import dataclass
 from datetime import datetime
 import requests
 from django.core.cache import cache
 import flag
 
 from synapse_admin.helpers import assemble_mxc_url, get_download_url_for_media
+
+
+class User:
+    __name: str
+    __display_name: str
+    __is_admin: bool
+    __is_deactivated: bool
+    __created_at: datetime
+    __avatar_url: str | None
+
+    # Next values haven't write logic
+    devices: dict
+    last_seen_device: dict
+
+    def __init__(self, name: str, display_name: str, is_admin: bool,
+                 is_deactivated: bool, created_at: datetime, avatar_mxc_url: str | None):
+        self.__name = name
+        self.__display_name = display_name
+        self.__is_admin = is_admin
+        self.__is_deactivated = is_deactivated
+        self.__created_at = created_at
+
+        # Convert avatar url
+        if avatar_mxc_url is None:
+            self.__avatar_url = avatar_mxc_url
+        else:
+            mxc_url = assemble_mxc_url(avatar_mxc_url)
+            self.__avatar_url = get_download_url_for_media(
+                server_name=mxc_url[0],
+                media_id=mxc_url[1]
+            )
+
+    @property
+    def name(self) -> str:
+        return self.__name
+
+    @property
+    def created_at(self) -> datetime:
+        return self.__created_at
+
+    @property
+    def avatar_url(self) -> str:
+        return self.__avatar_url
+
+    @property
+    def display_name(self) -> str:
+        return self.__display_name
+
+    @display_name.setter
+    def display_name(self, value: str):
+
+        self.__display_name = value
+        raise Exception
+
+    @property
+    def is_admin(self):
+        return self.__is_admin
+
+    @is_admin.setter
+    def is_admin(self, value: bool):
+
+        self.__is_admin = value
+        raise Exception
+
+    @property
+    def is_deactivated(self) -> bool:
+        return self.__is_deactivated
+
+    @is_deactivated.setter
+    def is_deactivated(self, value: bool):
+
+        self.__is_deactivated = value
+        raise Exception
 
 
 def get_country_by_ip(ip: str) -> str:
@@ -25,6 +99,7 @@ def load_user_devices(access_token: str, server_name: str, username: str) -> lis
      - Last seen
      - Device IP
     """
+
     devices = []
 
     response = requests.get(url=f'https://{server_name}/_synapse/admin/v2/users/{username}/devices',
@@ -77,45 +152,32 @@ def load_users(access_token: str, server_name: str) -> bool:
     })
 
     if response.status_code != 200:
-        # raise Exception
         return False
 
     for user in response.json()['users']:
-        users[f'{user["name"]}'] = {
-            'name': user['name'],
-            'display_name': user['displayname'],
-            'admin': user['admin'],
-            'deactivated': user['deactivated'],
-            'creation_ts': datetime.fromtimestamp(user['creation_ts'] / 1000),
-            'avatar_url': user['avatar_url']
-        }
-
-    # Convert avatar url
-    for user in users.values():
-        if user['avatar_url'] is None:
-            continue
-
-        mxc_url = assemble_mxc_url(user['avatar_url'])
-        user['avatar_url'] = get_download_url_for_media(
-            server_name=mxc_url[0],
-            media_id=mxc_url[1],
-            access_token=access_token
+        users[user['name']] = User(
+            name=user['name'],
+            display_name=user['displayname'],
+            is_admin=user['admin'],
+            is_deactivated=user['deactivated'],
+            created_at=datetime.fromtimestamp(user['creation_ts'] / 1000),
+            avatar_mxc_url=user['avatar_url']
         )
 
     # Load users devices
     for user in users.values():
-        user['devices'] = load_user_devices(
+        user.devices = load_user_devices(
             access_token=access_token,
             server_name=server_name,
-            username=user['name']
+            username=user.name
         )
 
         # Find last seen device
-        devices = sorted(user['devices'], key=lambda k: k['last_seen_ts'], reverse=True)
+        devices = sorted(user.devices, key=lambda k: k['last_seen_ts'], reverse=True)
         if len(devices) > 0:
-            user['last_seen_device'] = devices[0]
+            user.last_seen_device = devices[0]
         else:
-            user['last_seen_device'] = {
+            user.last_seen_device = {
                 'id': 'Unknown',
                 'name': 'Unknown',
                 'user_agent': 'Unknown',

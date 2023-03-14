@@ -72,7 +72,7 @@ class DashboardView(TemplateView):
         context['last_scan'] = last_scan
 
         # Sorts users by last creation_ts and slice for 5
-        context['users'] = sorted(cache.get('users', {}).values(), key=lambda k: k['creation_ts'], reverse=True)[:5]
+        context['users'] = sorted(cache.get('users', {}).values(), key=lambda k: k.created_at, reverse=True)[:5]
 
         return context
 
