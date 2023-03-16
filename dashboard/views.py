@@ -80,42 +80,46 @@ class DashboardView(TemplateView):
 class InitView(TemplateView):
     template_name = 'dashboard/init.html'
 
-    def init_synapse_admin(self) -> (int, str | None):
+    @staticmethod
+    def check_connection_to_server(server_name: str, server_access_token: str) -> bool:
         """
-        Returns (status_code, error msg), if last exists.
+        Checks the connection to the server and verifies the access token.
         """
 
+        # Check connection to server
         try:
-            response = requests.get(url=f'https://{settings.MATRIX_DOMAIN}/_synapse/admin/v1/server_version', timeout=1)
+            response = requests.get(url=f'https://{server_name}/_synapse/admin/v1/server_version', timeout=1)
         except requests.exceptions.ConnectionError:
-            return 0, 'Connection Timeout'
+            return False
 
         if response.status_code != 200:
-            return response.status_code, response.text
+            return False
 
-        response = requests.get(url=f'https://{settings.MATRIX_DOMAIN}/_synapse/admin/v1/rooms',
+        # Check access token
+        response = requests.get(url=f'https://{server_name}/_synapse/admin/v1/rooms',
                                 headers={
-                                    'Authorization': f'Bearer {settings.MATRIX_ADMIN_TOKEN}'
+                                    'Authorization': f'Bearer {server_access_token}'
                                 })
 
         if response.status_code != 200:
-            return response.status_code, response.json().get('error', 'Unknown Error')
+            return False
 
-        return 200, None
+        return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        init_results = self.init_synapse_admin()
-        cache.set(
-            'init_completed',
-            1 if init_results[0] == 200 else 0,
-            60 * 60 * 60 * 24
+        init_result = self.check_connection_to_server(
+            server_name=settings.MATRIX_DOMAIN,
+            server_access_token=settings.MATRIX_ADMIN_TOKEN
         )
-
-        context['access_token'] = settings.MATRIX_ADMIN_TOKEN
+        cache.set(
+            'init_successful',
+            init_result,
+            60 * 60 * 60 * 24  # 1 day
+        )
+        context['server_access_token'] = settings.MATRIX_ADMIN_TOKEN
         context['server_name'] = settings.MATRIX_DOMAIN
-        context['connection_status_code'] = init_results[0]
-        context['error_message'] = init_results[1]
+        context['init_successful'] = init_result
 
         return context

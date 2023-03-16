@@ -1,6 +1,16 @@
 {% extends '_base.html' %}
+{% load django_bootstrap5 %}
 
 {% block content %}
+    <div class="container container-sm p-2 bg-dark rounded" style="width: 24rem">
+        <form action="" method="post">{% csrf_token %}
+            {% bootstrap_form form %}
+            <div class="mb-3">
+                <input class="form-control bg-dark" type="submit" value="Send">
+            </div>
+            <div class="text-danger">{% bootstrap_form_errors form %}</div>
+        </form>
+    </div>
     <div id="service_notices_send">
         <form method="post">{% csrf_token %}
             <div>Write text (possible in MarkDown) here:</div>

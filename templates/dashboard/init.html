@@ -1,37 +1,22 @@
-{% load static %}
+{% extends '_base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>synapse_admin</title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-
-    <link rel="stylesheet" href="{% static 'dashboard/init.css' %}">
-</head>
-<body>
-    <div class="container m-2 d-flex justify-content-center">
-        <div class="card m-2" style="width: 24rem;" data-bs-theme="dark">
-            <div class="card-header text-light">synapse_admin initialization </div>
+{% block content %}
+    <div class="d-flex justify-content-center py-5 px-1">
+        <div class="card">
+            <div class="card-header">synapse_admin init</div>
             <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Server name: {{ server_name }}</li>
-                    <li class="list-group-item">Token: {{ access_token|truncatechars:20 }}</li>
-                    <li class="list-group-item">Connection to server: {{ connection_status_code }}</li>
-                    {% if error_message %}
-                    <li class="list-group-item text-danger">{{ error_message }}</li>
-                    {% endif %}
+                <ul class="list-group">
+                    <li class="list-group-item">Server: {{ server_name }}</li>
+                    <li class="list-group-item">Token: {{ server_access_token|truncatechars:20 }}</li>
                 </ul>
             </div>
-            {% if connection_status_code == 200 %}
-                <div class="card-footer">
-                    <a href="{% url 'dashboard:dashboard' %}" class="card-link">Go to Dashboard?</a>
-                </div>
-            {% endif %}
+            <div class="card-footer">
+                {% if init_successful %}
+                    <a href="{% url 'dashboard:dashboard' %}">Got to dashboard?</a>
+                {% else %}
+                    <div class="text-danger">Your token is invalid!</div>
+                {% endif %} 
+            </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}
