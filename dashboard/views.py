@@ -5,8 +5,9 @@ from django.views.generic import TemplateView
 from django.core.cache import cache
 from django.conf import settings
 
-from synapse_admin.decorators import check_auth
+from project.decorators import check_auth
 from users.helpers import load_users
+from .helpers import load_media_statistics
 import requests
 
 
@@ -24,15 +25,15 @@ def update_map() -> dict:
             u2u_relation=True
         )
 
-        _map = json.loads(graph.json)
+        server_map = json.loads(graph.json)
 
         # Clear all unnecessary information
-        _map = {
-            'nodes': _map['nodes'],
-            'edges': _map['edges']
+        server_map = {
+            'nodes': server_map['nodes'],
+            'edges': server_map['edges']
         }
 
-        return _map
+        return server_map
 
     except synapse_graph.SynapseGraphError as e:
         return {}
@@ -48,31 +49,41 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Scan users
-        last_scan = cache.get('last_scan', None)
+        # Check last users info updating
+        last_users_info_update = cache.get('last_users_info_update', None)
 
-        if last_scan is None:
-            scan_result = load_users(
-                access_token=settings.MATRIX_ADMIN_TOKEN,
-                server_name=settings.MATRIX_DOMAIN
+        if last_users_info_update is None:
+            load_users(
+                server_name=settings.MATRIX_DOMAIN,
+                access_token=settings.MATRIX_ADMIN_TOKEN
             )
 
-            if scan_result:
-                last_scan = datetime.datetime.now()
+        # Check last media statistics info updating
+        last_media_statistics_info_updating = cache.get('last_media_statistics_info_updating', None)
 
-            cache.set('last_scan', last_scan, (60 * 60 * 60 * 23))
+        if last_media_statistics_info_updating is None:
+            load_media_statistics(
+                server_name=settings.MATRIX_DOMAIN,
+                access_token=settings.MATRIX_ADMIN_TOKEN
+            )
 
-        # Map
-        _map = cache.get('map')
-        if _map is None:
-            _map = update_map()
-            cache.set('map', _map, 60 * 60 * 60 * 24)
+        # Synapse graph
+        server_map = cache.get('server_map', None)
+        if server_map is None:
+            server_map = update_map()
+            cache.set('server_map', server_map, 60 * 60 * 60 * 24)  # 1 day
 
-        context['map'] = json.dumps(_map)
-        context['last_scan'] = last_scan
+        context['server_map'] = json.dumps(server_map)
 
-        # Sorts users by last creation_ts and slice for 5
-        context['users'] = sorted(cache.get('users', {}).values(), key=lambda k: k.created_at, reverse=True)[:5]
+        # Sorts users by last creation_ts and slice last week
+        users: dict = cache.get('users', {})
+        last_week: datetime.datetime = datetime.datetime.now() - datetime.timedelta(weeks=1)
+        new_users: list = [user for user in users.values() if user['created_at'] > last_week]
+        context['new_users_for_last_week'] = new_users
+        context['last_users_info_update'] = last_users_info_update
+
+        context['size_of_all_media'] = cache.get('size_of_all_media', None)
+        context['last_media_statistics_info_updating'] = cache.get('last_media_statistics_info_updating', None)
 
         return context
 

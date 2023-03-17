@@ -2,29 +2,53 @@
 {% load static %}
 
 {% block content %}
-    <div class="container d-flex flex-wrap justify-content-evenly m-2 table-responsive rounded bg-dark p-2">
-        <table class="table table-dark">
-            <tr>
-                <th>NAME</th>
-                <th>PUBLIC NAME</th>
-                <th>CREATED AT</th>
-                <th>IS DEACTIVATED</th>
-            </tr>
-            {% for user in users %}
+    <div class="p-2">
+        <div id="server_map" class="bg-light mb-2" style="height: 500px">
+
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-striped">
+                <caption>Users registered in the last week. Information was last updated at: {{ last_users_info_update|default:"Error" }}</caption>
+                <thead>
                 <tr>
-                    <th><a class="link-light" href="{% url 'users:detail' user_id=user.name %}">{{ user.name }}</a></th>
-                    <td>{{ user.display_name }}</td>
-                    <td>{{ user.created_at}}</td>
-                    <td>{% if user.is_deactivated == True %} Yes {% else %} No {% endif %}</td>
+                    <th>NAME</th>
+                    <th>CREATED AT</th>
+                    <th>L.S. IP</th>
+                    <th>L.S. COUNTRY</th>
                 </tr>
-            {% endfor %}
-        </table>
+                </thead>
+                <tbody>
+                {% for user in new_users_for_last_week %}
+                    <tr>
+                        <td>{{ user.name|truncatechars:24 }}</td>
+                        <td>{{ user.created_at }}</td>
+                        <td>{{ user.ip }}</td>
+                        <td>{{ user.country }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-primary">
+            {% if size_of_all_media %}
+                The amount of memory used: {{ size_of_all_media }} at {{ last_media_statistics_info_updating }}
+            {% else %}
+                The amount of memory used: Error
+            {% endif %}
+        </div>
     </div>
-    <div id="map" class="container m-2 w-100 bg-dark rounded p-2"></div>
 {% endblock %}
+
 
 {% block optional_scripts %}
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script type="text/javascript" src="{% static 'dashboard/map.js' %}"></script>
-    <script type="text/javascript">setMapFromJson(String.raw`{{ map|safe }}`);</script>
+    <script type="text/javascript">setMapFromJson(String.raw`{{ server_map|safe }}`);</script>
 {% endblock %}

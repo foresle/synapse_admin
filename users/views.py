@@ -4,7 +4,7 @@ from django.views.generic import TemplateView, RedirectView
 from django.conf import settings
 from django.http import Http404
 
-from users.helpers import load_user_devices
+# from users.helpers import load_user_devices
 
 
 class UsersView(TemplateView):
@@ -44,35 +44,6 @@ class UsersView(TemplateView):
         )
         context['sort_by'] = sort_by
         return context
-
-
-class UpdateLastSeenView(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        users = cache.get('users', {})
-
-        for user in users.values():
-            user['devices'] = load_user_devices(
-                access_token=settings.MATRIX_ADMIN_TOKEN,
-                server_name=settings.MATRIX_DOMAIN,
-                username=user['name']
-            )
-
-            # Find last seen device
-            devices = sorted(user['devices'], key=lambda k: k['last_seen_ts'], reverse=True)
-            if len(devices) > 0:
-                user['last_seen_device'] = devices[0]
-            else:
-                user['last_seen_device'] = {
-                    'id': 'Unknown',
-                    'name': 'Unknown',
-                    'user_agent': 'Unknown',
-                    'last_seen_ts': datetime.fromtimestamp(946684800),
-                    'last_seen_ip': 'Unknown'
-                }
-
-        cache.set('users', users, 60 * 60 * 60 * 24)
-
-        return super().get_redirect_url(*args, **kwargs)
 
 
 class UserView(TemplateView):
