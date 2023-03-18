@@ -6,9 +6,10 @@
         <div id="server_map" class="bg-light mb-2" style="height: 500px">
 
         </div>
+        <p class="text-muted">Map updated at: {{ cached_server_map_updated_at }}</p>
         <div class="table-responsive">
             <table class="table table-dark table-striped">
-                <caption>Users registered in the last week. Information was last updated at: {{ last_users_info_update|default:"Error" }}</caption>
+                <caption>Users registered in the last week. Updated at: {{ cached_users_updated_at|default:"Error" }}</caption>
                 <thead>
                 <tr>
                     <th>NAME</th>
@@ -37,8 +38,8 @@
             </table>
         </div>
         <div class="alert alert-primary">
-            {% if size_of_all_media %}
-                The amount of memory used: {{ size_of_all_media }} at {{ last_media_statistics_info_updating }}
+            {% if amount_of_uploaded_media %}
+                The amount of memory used: {{ amount_of_uploaded_media }} at {{ cached_media_statistics_updated_at }}
             {% else %}
                 The amount of memory used: Error
             {% endif %}

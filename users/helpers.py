@@ -4,6 +4,7 @@ import requests
 from django.core.cache import cache
 import flag
 import synapse_admin
+from django.conf import settings
 
 from project.helpers import assemble_mxc_url, get_download_url_for_media
 
@@ -85,5 +86,5 @@ def load_users(access_token: str, server_name: str) -> None:
             'avatar_mxc_url': user['avatar_url']
         }
 
-    cache.set('users', users, 60 * 60 * 60 * 24)
-    cache.set('last_users_info_update', datetime.now(), 60 * 60 * 60 * 24)
+    cache.set(settings.CACHED_USERS_UPDATED_AT, datetime.now(), 60 * 60 * 60 * 24)
+    cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)
