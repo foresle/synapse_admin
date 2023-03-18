@@ -5,15 +5,21 @@
         <div class="d-flex justify-content-center">
             <nav>
                 <ul class="pagination">
-                    <li class="page-item"><a class="page-link" href=""><</a></li>
-                    <li class="page-item"><a class="page-link" href="">0</a></li>
-                    <li class="page-item"><a class="page-link" href="">></a></li>
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1&page_size={{ page_size }}"> << </a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&page_size={{ page_size }}"><</a></li>
+                    {% endif %}
+                    <li class="page-item"><a class="page-link" href="">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&page_size={{ page_size }}">></a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&page_size={{ page_size }}"> >> </a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
         <div class="table-responsive">
             <table class="table table-dark table-striped">
-                <caption>All users</caption>
+                <caption>Total users: {{ total_users }}</caption>
                 <thead>
                 <tr>
                     <th>NAME</th>
@@ -40,6 +46,7 @@
                     </tr>
                 {% empty %}
                     <tr>
+                        <td>-</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
