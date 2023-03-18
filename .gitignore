@@ -4,3 +4,4 @@
 db.sqlite3
 /staticfiles/
 /dump.rdb
+/prod.env
