@@ -21,7 +21,7 @@
                 <tbody>
                 {% for user in new_users_for_last_week %}
                     <tr>
-                        <td>{{ user.name|truncatechars:24 }}</td>
+                        <td>{{ user.name_without_server_name_ending|truncatechars:20 }}</td>
                         <td>{{ user.created_at }}</td>
                         <td>{{ user.ip }}</td>
                         <td>{{ user.country }}</td>

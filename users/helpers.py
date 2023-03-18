@@ -61,6 +61,7 @@ def load_users(access_token: str, server_name: str) -> None:
     for user in user_manager.lists():
         users[user['name']] = {
             'name': user['name'],
+            'name_without_server_name_ending': user['name'][:-(len(settings.MATRIX_DOMAIN)+1)],
             'display_name': user['displayname'],
             'is_admin': user['admin'],
             'is_deactivated': user['deactivated'],
