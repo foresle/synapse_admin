@@ -60,6 +60,8 @@ class DashboardView(TemplateView):
         context['server_map'] = json.dumps(cache.get(settings.CACHED_SERVER_MAP, {}))
         context['cached_server_map_updated_at'] = cached_server_map_updated_at
 
+        context['dashboard_page_active'] = True
+
         return context
 
 
@@ -107,5 +109,6 @@ class InitView(TemplateView):
         context['server_access_token'] = settings.MATRIX_ADMIN_TOKEN
         context['server_name'] = settings.MATRIX_DOMAIN
         context['init_successful'] = init_result
+        context['init_page_active'] = True
 
         return context

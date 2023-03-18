@@ -43,6 +43,9 @@ class UsersView(TemplateView):
             sort_by=sort_by
         )
         context['sort_by'] = sort_by
+
+        context['users_page_active'] = True
+
         return context
 
 
