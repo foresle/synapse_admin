@@ -5,6 +5,8 @@ import flag
 import synapse_admin
 from django.conf import settings
 
+from project.helpers import get_download_url_for_media, assemble_mxc_url
+
 
 def get_country_by_ip(ip: str) -> str:
     country: str
@@ -73,6 +75,15 @@ def load_users(access_token: str, server_name: str) -> None:
         users[user['name']].update(
             get_last_seen_info(access_token=access_token, server_name=server_name, user_id=user['name'])
         )
+
+        # Convert avatar url address
+        if user['avatar_url'] is not None:
+            avatar_server_name, avatar_media_id = assemble_mxc_url(user['avatar_url'])
+            users[user['name']]['avatar_url'] = get_download_url_for_media(
+                media_id=avatar_media_id,
+                server_name=avatar_server_name,
+                access_token=settings.MATRIX_ADMIN_TOKEN
+            )
 
     cache.set(settings.CACHED_USERS_UPDATED_AT, datetime.now(), 60 * 60 * 60 * 24)
     cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)

@@ -39,7 +39,7 @@
                 <tbody>
                 {% for user in users %}
                     <tr>
-                        <th>{{ user.name_without_server_name_ending|truncatechars:20 }}</th>
+                        <th><a href="{% url 'users:detail' user_id=user.name %}" class="link-light">{{ user.name_without_server_name_ending|truncatechars:20 }}</a></th>
                         <td>{{ user.display_name|truncatechars:24 }}</td>
                         <td>{{ user.created_at }}</td>
                         <td>{% if user.is_admin %} Yes {% else %} No {% endif %}</td>

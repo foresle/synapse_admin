@@ -69,6 +69,9 @@ class UserView(TemplateView):
         user = cache.get('users', {}).get(user_id, None)
         if user is None:
             raise Http404('User not found.')
+
+        cache.get(settings.CACHED_MEDIA_STATISTICS, {})
+
         context['user'] = user
 
         return context

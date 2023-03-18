@@ -27,8 +27,21 @@ def load_media_statistics(access_token: str, server_name: str) -> None:
         server_protocol='https://'
     )
 
+    media_statistics: list = media_manager.statistics()
     cache.set(settings.CACHED_MEDIA_STATISTICS_UPDATED_AT, datetime.datetime.now(), 60 * 60 * 60 * 6)  # 6 hours
-    cache.set(settings.CACHED_MEDIA_STATISTICS, media_manager.statistics(), 60 * 60 * 60 * 6)  # 6 hours
+    cache.set(settings.CACHED_MEDIA_STATISTICS, media_statistics, 60 * 60 * 60 * 6)  # 6 hours
+
+    # Update media info in cached users
+    users = cache.get(settings.CACHED_USERS, {})
+
+    for user_statistics in media_statistics:
+        try:
+            users[user_statistics['user_id']]['upload_media_count'] = user_statistics['media_count']
+            users[user_statistics['user_id']]['size_of_upload_media'] = convert_size(user_statistics['media_length'])
+        except KeyError:
+            continue
+
+    cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)  # 1 day
 
 
 def load_server_map(access_token: str, server_name: str) -> None:
