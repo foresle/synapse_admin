@@ -4,7 +4,7 @@ from django.core.cache import cache
 
 def check_auth(func):
     def wrapper(*args, **kwargs):
-        value = cache.get('init_completed')
+        value = cache.get('init_successful')
 
         if value is None:
             value = False

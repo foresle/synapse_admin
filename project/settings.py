@@ -19,6 +19,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_bootstrap5',
+
     # Local apps
     'users.apps.UsersConfig',
     'dashboard.apps.DashboardConfig',
@@ -35,7 +37,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'synapse_admin.urls'
+ROOT_URLCONF = 'project.urls'
 
 TEMPLATES = [
     {
@@ -54,7 +56,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'synapse_admin.wsgi.application'
+WSGI_APPLICATION = 'project.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -92,6 +94,20 @@ STATICFILES_DIRS = (
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Bootstrap forms
+BOOTSTRAP5 = {
+    "css_url": {
+        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css",
+        "integrity": "sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3",
+        "crossorigin": "anonymous",
+    },
+    "javascript_url": {
+        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js",
+        "integrity": "sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p",
+        "crossorigin": "anonymous",
+    }
+}
+
 MATRIX_ADMIN_TOKEN = env('MATRIX_ADMIN_TOKEN')
 MATRIX_DOMAIN = env('MATRIX_DOMAIN')
 
@@ -109,3 +125,12 @@ CACHES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
+# Cached values constants
+CACHED_USERS: str = 'users'
+CACHED_USERS_UPDATED_AT: str = 'users_updated_at'
+
+CACHED_SERVER_MAP: str = 'server_map'
+CACHED_SERVER_MAP_UPDATED_AT: str = 'server_map_updated_at'
+
+CACHED_MEDIA_STATISTICS: str = 'media_statistics'
+CACHED_MEDIA_STATISTICS_UPDATED_AT: str = 'media_statistics_updated_at'

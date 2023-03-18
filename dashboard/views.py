@@ -1,41 +1,12 @@
 import datetime
 import json
-import synapse_graph as synapse_graph
 from django.views.generic import TemplateView
 from django.core.cache import cache
 from django.conf import settings
-
-from synapse_admin.decorators import check_auth
+from project.decorators import check_auth
 from users.helpers import load_users
+from .helpers import load_media_statistics, load_server_map, convert_size
 import requests
-
-
-def update_map() -> dict:
-    """
-    Load synapse graph, use only in dashboard view.
-    """
-
-    try:
-        graph = synapse_graph.SynapseGraph(
-            name=settings.MATRIX_DOMAIN,
-            headers={'Authorization': f'Bearer {settings.MATRIX_ADMIN_TOKEN}'},
-            matrix_homeserver=settings.MATRIX_DOMAIN,
-            hide_usernames=False,
-            u2u_relation=True
-        )
-
-        _map = json.loads(graph.json)
-
-        # Clear all unnecessary information
-        _map = {
-            'nodes': _map['nodes'],
-            'edges': _map['edges']
-        }
-
-        return _map
-
-    except synapse_graph.SynapseGraphError as e:
-        return {}
 
 
 class DashboardView(TemplateView):
@@ -48,31 +19,48 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Scan users
-        last_scan = cache.get('last_scan', None)
+        # Checking last updating information about users
+        cached_users_updated_at = cache.get(settings.CACHED_USERS_UPDATED_AT, None)
 
-        if last_scan is None:
-            scan_result = load_users(
-                access_token=settings.MATRIX_ADMIN_TOKEN,
-                server_name=settings.MATRIX_DOMAIN
+        if cached_users_updated_at is None:
+            load_users(
+                server_name=settings.MATRIX_DOMAIN,
+                access_token=settings.MATRIX_ADMIN_TOKEN
             )
 
-            if scan_result:
-                last_scan = datetime.datetime.now()
+        # Checking last updating information of media statistics
+        cached_media_statistics_updated_at = cache.get(settings.CACHED_MEDIA_STATISTICS_UPDATED_AT, None)
 
-            cache.set('last_scan', last_scan, (60 * 60 * 60 * 23))
+        if cached_media_statistics_updated_at is None:
+            load_media_statistics(
+                server_name=settings.MATRIX_DOMAIN,
+                access_token=settings.MATRIX_ADMIN_TOKEN
+            )
 
-        # Map
-        _map = cache.get('map')
-        if _map is None:
-            _map = update_map()
-            cache.set('map', _map, 60 * 60 * 60 * 24)
+        # Checking last updating server map
+        cached_server_map_updated_at = cache.get(settings.CACHED_SERVER_MAP_UPDATED_AT, None)
+        if cached_server_map_updated_at is None:
+            load_server_map(
+                server_name=settings.MATRIX_DOMAIN,
+                access_token=settings.MATRIX_ADMIN_TOKEN
+            )
 
-        context['map'] = json.dumps(_map)
-        context['last_scan'] = last_scan
+        # Sorts users by last creation_ts and slice last week
+        users: dict = cache.get('users', {})
+        last_week: datetime.datetime = datetime.datetime.now() - datetime.timedelta(weeks=1)
+        new_users: list = [user for user in users.values() if user['created_at'] > last_week]
+        context['new_users_for_last_week'] = new_users
+        context['cached_users_updated_at'] = cached_users_updated_at
 
-        # Sorts users by last creation_ts and slice for 5
-        context['users'] = sorted(cache.get('users', {}).values(), key=lambda k: k.created_at, reverse=True)[:5]
+        context['amount_of_uploaded_media'] = convert_size(
+            sum([user['media_length'] for user in cache.get(settings.CACHED_MEDIA_STATISTICS, [])])
+        )
+        context['cached_media_statistics_updated_at'] = cached_media_statistics_updated_at
+
+        context['server_map'] = json.dumps(cache.get(settings.CACHED_SERVER_MAP, {}))
+        context['cached_server_map_updated_at'] = cached_server_map_updated_at
+
+        context['dashboard_page_active'] = True
 
         return context
 
@@ -80,42 +68,47 @@ class DashboardView(TemplateView):
 class InitView(TemplateView):
     template_name = 'dashboard/init.html'
 
-    def init_synapse_admin(self) -> (int, str | None):
+    @staticmethod
+    def check_connection_to_server(server_name: str, server_access_token: str) -> bool:
         """
-        Returns (status_code, error msg), if last exists.
+        Checks the connection to the server and verifies the access token.
         """
 
+        # Check connection to server
         try:
-            response = requests.get(url=f'https://{settings.MATRIX_DOMAIN}/_synapse/admin/v1/server_version', timeout=1)
+            response = requests.get(url=f'https://{server_name}/_synapse/admin/v1/server_version', timeout=1)
         except requests.exceptions.ConnectionError:
-            return 0, 'Connection Timeout'
+            return False
 
         if response.status_code != 200:
-            return response.status_code, response.text
+            return False
 
-        response = requests.get(url=f'https://{settings.MATRIX_DOMAIN}/_synapse/admin/v1/rooms',
+        # Check access token
+        response = requests.get(url=f'https://{server_name}/_synapse/admin/v1/rooms',
                                 headers={
-                                    'Authorization': f'Bearer {settings.MATRIX_ADMIN_TOKEN}'
+                                    'Authorization': f'Bearer {server_access_token}'
                                 })
 
         if response.status_code != 200:
-            return response.status_code, response.json().get('error', 'Unknown Error')
+            return False
 
-        return 200, None
+        return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        init_results = self.init_synapse_admin()
-        cache.set(
-            'init_completed',
-            1 if init_results[0] == 200 else 0,
-            60 * 60 * 60 * 24
+        init_result = self.check_connection_to_server(
+            server_name=settings.MATRIX_DOMAIN,
+            server_access_token=settings.MATRIX_ADMIN_TOKEN
         )
-
-        context['access_token'] = settings.MATRIX_ADMIN_TOKEN
+        cache.set(
+            'init_successful',
+            init_result,
+            60 * 60 * 60 * 24  # 1 day
+        )
+        context['server_access_token'] = settings.MATRIX_ADMIN_TOKEN
         context['server_name'] = settings.MATRIX_DOMAIN
-        context['connection_status_code'] = init_results[0]
-        context['error_message'] = init_results[1]
+        context['init_successful'] = init_result
+        context['init_page_active'] = True
 
         return context
