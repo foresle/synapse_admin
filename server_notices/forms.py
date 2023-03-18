@@ -6,12 +6,15 @@ from .helpers import send_server_notice
 
 
 class SendServiceNoticeForm(forms.Form):
-    payload = forms.CharField(widget=forms.Textarea())
+    payload = forms.CharField(
+        widget=forms.Textarea(attrs={'cols': '10', 'rows': '5'}),
+        help_text='Your announcement (can be in MarkDown)'
+    )
 
-    def send_server_notice(self) -> dict:
-        users = cache.get('users', {}).values()
+    def send_server_notice(self) -> list:
+        users = cache.get(settings.CACHED_USERS, {}).values()
 
-        result = {}
+        result = []
 
         for user in users:
             status_code = send_server_notice(
@@ -21,6 +24,6 @@ class SendServiceNoticeForm(forms.Form):
                 user_id=user['name']
             )
 
-            result[user['name']] = status_code
+            result.append(status_code)
 
         return result

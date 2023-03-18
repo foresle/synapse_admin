@@ -1,7 +1,7 @@
 import datetime
-
 from django.core.cache import cache
 from django.views.generic import FormView
+from django.contrib import messages
 
 from .forms import SendServiceNoticeForm
 
@@ -12,16 +12,14 @@ class SendServerNoticeView(FormView):
     success_url = '/server_notices/'
 
     def form_valid(self, form):
-        cache.set('last_server_notice', {
-            'result': form.send_server_notice(),
-            'sending_at': datetime.datetime.now(),
-            'payload': form.cleaned_data['payload']
-        }, 60 * 60 * 60 * 24 * 7)
+        results: list = form.send_server_notice()
+        results: str = f'{sum(results)} out of {len(results)} notices were sent.'
+        messages.add_message(self.request, messages.SUCCESS, results)
         return super().form_valid(form=form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['last_server_notice'] = cache.get('last_server_notice', None)
+        context['server_notices_page_active'] = True
 
         return context
