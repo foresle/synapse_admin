@@ -45,11 +45,22 @@ class DashboardView(TemplateView):
                 access_token=settings.MATRIX_ADMIN_TOKEN
             )
 
-        # Sorts users by last creation_ts and slice last week
         users: dict = cache.get('users', {})
+
+        # Sorts users by last creation_ts and slice last week
         last_week: datetime.datetime = datetime.datetime.now() - datetime.timedelta(weeks=1)
         new_users: list = [user for user in users.values() if user['created_at'] > last_week]
+
+        # Sorts users by last_seen_at and filter for today
+        today: datetime.date = datetime.datetime.now().date()
+        active_users_today: list = sorted(
+            [user for user in users.values() if
+             user['last_seen_at'] != 'Unknown' and user['last_seen_at'].date() == today],
+            key=lambda k: k['last_seen_at'], reverse=True
+        )
+
         context['new_users_for_last_week'] = new_users
+        context['active_users_today'] = active_users_today
         context['cached_users_updated_at'] = cached_users_updated_at
 
         context['amount_of_uploaded_media'] = convert_size(
