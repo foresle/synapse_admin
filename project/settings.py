@@ -90,7 +90,7 @@ STATIC_ROOT = 'staticfiles/'
 STATICFILES_DIRS = (
     BASE_DIR / 'static',
 )
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -134,3 +134,12 @@ CACHED_SERVER_MAP_UPDATED_AT: str = 'server_map_updated_at'
 
 CACHED_MEDIA_STATISTICS: str = 'media_statistics'
 CACHED_MEDIA_STATISTICS_UPDATED_AT: str = 'media_statistics_updated_at'
+
+# CELERY
+CELERY_BEAT_SCHEDULE = {
+    'update_users_info_every_30m': {
+        'task': 'users.tasks.update_users_info',
+        'schedule': 60 * 30
+    },
+}
+CELERY_BROKER_URL = env('REDIS_LOCATION', default='redis://redis:6379/')
