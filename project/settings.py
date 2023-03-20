@@ -141,5 +141,13 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'users.tasks.update_users_info',
         'schedule': 60 * 30
     },
+    'update_media_statistics_info_every_1h': {
+        'task': 'dashboard.tasks.update_media_statistics_info',
+        'schedule': 60 * 60
+    },
+    'update_server_map_every_12h': {
+        'task': 'users.tasks.dashboard.tasks.update_server_map',
+        'schedule': 60 * 60 * 12
+    },
 }
 CELERY_BROKER_URL = env('REDIS_LOCATION', default='redis://redis:6379/')
