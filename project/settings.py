@@ -11,7 +11,6 @@ DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 ALLOWED_HOSTS = []
 
-
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -35,6 +34,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -80,7 +80,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Kiev'
 USE_I18N = True
@@ -91,6 +90,7 @@ STATIC_ROOT = 'staticfiles/'
 STATICFILES_DIRS = (
     BASE_DIR / 'static',
 )
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -134,3 +134,20 @@ CACHED_SERVER_MAP_UPDATED_AT: str = 'server_map_updated_at'
 
 CACHED_MEDIA_STATISTICS: str = 'media_statistics'
 CACHED_MEDIA_STATISTICS_UPDATED_AT: str = 'media_statistics_updated_at'
+
+# CELERY
+CELERY_BEAT_SCHEDULE = {
+    'update_users_info_every_30m': {
+        'task': 'users.tasks.update_users_info',
+        'schedule': 60 * 30
+    },
+    'update_media_statistics_info_every_1h': {
+        'task': 'dashboard.tasks.update_media_statistics_info',
+        'schedule': 60 * 60
+    },
+    'update_server_map_every_12h': {
+        'task': 'users.tasks.dashboard.tasks.update_server_map',
+        'schedule': 60 * 60 * 12
+    },
+}
+CELERY_BROKER_URL = env('REDIS_LOCATION', default='redis://redis:6379/')

@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    command: sh -c "python manage.py collectstatic --noinput && gunicorn project.wsgi -b 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file: prod.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  celery:
+    build: .
+    command: celery -A project worker -l INFO
+    env_file: prod.env
+    volumes:
+      - ".:/app"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  celery-beat:
+    build: .
+    command: celery -A project beat -l INFO
+    env_file: prod.env
+    volumes:
+      - ".:/app"
+    depends_on:
+      - redis
+    restart: unless-stopped

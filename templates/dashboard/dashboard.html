@@ -9,7 +9,8 @@
         <p class="text-muted">Map updated at: {{ cached_server_map_updated_at }}</p>
         <div class="table-responsive">
             <table class="table table-dark table-striped">
-                <caption>Users registered in the last week. Updated at: {{ cached_users_updated_at|default:"Error" }}</caption>
+                <caption>Users registered in the last week. Updated
+                    at: {{ cached_users_updated_at|default:"Error" }}</caption>
                 <thead>
                 <tr>
                     <th>NAME</th>
@@ -21,15 +22,42 @@
                 <tbody>
                 {% for user in new_users_for_last_week %}
                     <tr>
-                        <td>{{ user.name_without_server_name_ending|truncatechars:20 }}</td>
+                        <td><a href="{% url 'users:detail' user_id=user.name %}"
+                               class="link-light">{{ user.name_without_server_name_ending|truncatechars:20 }}</a></td>
                         <td>{{ user.created_at }}</td>
-                        <td>{{ user.ip }}</td>
-                        <td>{{ user.country }}</td>
+                        <td>{{ user.last_seen_ip }}</td>
+                        <td>{{ user.last_seen_country }}</td>
                     </tr>
                 {% empty %}
                     <tr>
                         <td>-</td>
                         <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-striped">
+                <caption>Active users for today. Updated
+                    at: {{ cached_users_updated_at|default:"Error" }}</caption>
+                <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>L.S. AT</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in active_users_today %}
+                    <tr>
+                        <td><a href="{% url 'users:detail' user_id=user.name %}"
+                               class="link-light">{{ user.name_without_server_name_ending|truncatechars:20 }}</a></td>
+                        <td>{{ user.last_seen_at }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
                         <td>-</td>
                         <td>-</td>
                     </tr>
