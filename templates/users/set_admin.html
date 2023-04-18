@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block content %}
+    <div class="py-2 d-flex justify-content-center">
+        <div class="card" style="width: 30rem;">
+            <div class="card-body">
+                <form action="" class="form" method="post">{% csrf_token %}
+                    {% bootstrap_form form %}
+
+                    {% bootstrap_button button_type="submit" button_class="btn-danger" content="Set admin" %}
+                </form>
+            </div>
+            {% if messages %}
+                <div class="card-body">{% bootstrap_messages %}</div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

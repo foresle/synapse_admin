@@ -1,38 +1,16 @@
 from django.core.cache import cache
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, FormView
 from django.conf import settings
 from django.http import Http404
+from django.contrib import messages
+
+from .forms import DeactivateUserForm, ActivateUserForm, SetAdminForm, RevokeAdminForm
 
 
 class UsersView(ListView):
     template_name = 'users/users.html'
     paginate_by = 10
-
-    # def sort_users(self, users: list, sort_by: str) -> list:
-    #     """
-    #     Just sort users list.
-    #     """
-    #
-    #     # Sort by name
-    #     if sort_by == 'name':
-    #         users = sorted(users, key=lambda k: k['name'])
-    #     elif sort_by == '-name':
-    #         users = sorted(users, key=lambda k: k['name'], reverse=True)
-    #
-    #     # Sort by creation date
-    #     if sort_by == 'creation_date':
-    #         users = sorted(users, key=lambda k: k['creation_ts'])
-    #     elif sort_by == '-creation_date':
-    #         users = sorted(users, key=lambda k: k['creation_ts'], reverse=True)
-    #
-    #     # Sort by last seen
-    #     if sort_by == 'last_seen':
-    #         users = sorted(users, key=lambda k: k['last_seen_device']['last_seen_ts'])
-    #     elif sort_by == '-last_seen':
-    #         users = sorted(users, key=lambda k: k['last_seen_device']['last_seen_ts'], reverse=True)
-    #
-    #     return users
 
     def get_queryset(self) -> tuple:
         return tuple(cache.get(settings.CACHED_USERS, {}).values())
@@ -73,5 +51,135 @@ class UserView(TemplateView):
         cache.get(settings.CACHED_MEDIA_STATISTICS, {})
 
         context['user'] = user
+
+        return context
+
+
+class DeactivateUserView(FormView):
+    template_name = 'users/deactivate.html'
+    form_class = DeactivateUserForm
+
+    def get_form(self, form_class=None):
+        form: DeactivateUserForm = super().get_form(form_class=form_class)
+
+        form.fields['user_id'].initial = self.kwargs['user_id']
+
+        return form
+
+    def form_valid(self, form):
+        result: bool = form.deactivate_user()
+        user_id: str = form.cleaned_data['user_id']
+
+        messages.add_message(
+            request=self.request,
+            level=messages.SUCCESS if result else messages.ERROR,
+            message=f'User {user_id} has been deactivated successfully!' if result else f'Deactivation unsuccessful.'
+        )
+
+        return super().form_valid(form=form)
+
+    def get_success_url(self):
+        return f'/users/deactivate/{self.kwargs["user_id"]}'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context
+
+
+class ActivateUserView(FormView):
+    template_name = 'users/activate.html'
+    form_class = ActivateUserForm
+
+    def get_form(self, form_class=None):
+        form: DeactivateUserForm = super().get_form(form_class=form_class)
+
+        form.fields['user_id'].initial = self.kwargs['user_id']
+
+        return form
+
+    def form_valid(self, form):
+        result: bool = form.activate_user()
+        user_id: str = form.cleaned_data['user_id']
+
+        messages.add_message(
+            request=self.request,
+            level=messages.SUCCESS if result else messages.ERROR,
+            message=f'User {user_id} has been activated successfully!' if result else f'Activation unsuccessful.'
+        )
+
+        return super().form_valid(form=form)
+
+    def get_success_url(self):
+        return f'/users/activate/{self.kwargs["user_id"]}'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context
+
+
+class SetAdminView(FormView):
+    template_name = 'users/set_admin.html'
+    form_class = SetAdminForm
+
+    def get_form(self, form_class=None):
+        form: DeactivateUserForm = super().get_form(form_class=form_class)
+
+        form.fields['user_id'].initial = self.kwargs['user_id']
+
+        return form
+
+    def form_valid(self, form):
+        result: bool = form.set_admin()
+        user_id: str = form.cleaned_data['user_id']
+
+        messages.add_message(
+            request=self.request,
+            level=messages.SUCCESS if result else messages.ERROR,
+            message=f'Admin access has been granted for {user_id} successfully!' if result else f'Granting admin '
+                                                                                                f'rights failed.'
+        )
+
+        return super().form_valid(form=form)
+
+    def get_success_url(self):
+        return f'/users/set_admin/{self.kwargs["user_id"]}'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context
+
+
+class RevokeAdminView(FormView):
+    template_name = 'users/revoke_admin.html'
+    form_class = RevokeAdminForm
+
+    def get_form(self, form_class=None):
+        form: DeactivateUserForm = super().get_form(form_class=form_class)
+
+        form.fields['user_id'].initial = self.kwargs['user_id']
+
+        return form
+
+    def form_valid(self, form):
+        result: bool = form.revoke_admin()
+        user_id: str = form.cleaned_data['user_id']
+
+        messages.add_message(
+            request=self.request,
+            level=messages.SUCCESS if result else messages.ERROR,
+            message=f'Admin access has been revoked for {user_id} successfully!' if result else f'Revoking admin '
+                                                                                                f'rights failed.'
+        )
+
+        return super().form_valid(form=form)
+
+    def get_success_url(self):
+        return f'/users/set_admin/{self.kwargs["user_id"]}'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
         return context
