@@ -8,14 +8,14 @@
                  class="rounded text-light bg-light"
                  width="200px" height="200px">
             {% if not user.is_deactivated %}
-                <a href="" class="btn btn-danger mt-2">DEACTIVATE</a>
+                <a href="{% url 'users:deactivate' user_id=user.name %}" class="btn btn-danger mt-2">DEACTIVATE</a>
             {% else %}
-                <a href="" class="btn btn-success mt-2">ACTIVATE</a>
+                <a href="{% url 'users:activate' user_id=user.name %}" class="btn btn-success mt-2">ACTIVATE</a>
             {% endif %}
             {% if not user.is_admin %}
-                <a href="" class="btn btn-danger mt-2">MAKE ADMIN</a>
+                <a href="{% url 'users:set_admin' user_id=user.name %}" class="btn btn-danger mt-2">MAKE ADMIN</a>
             {% else %}
-                <a href="" class="btn btn-success mt-2">REMOVE ADMIN</a>
+                <a href="{% url 'users:revoke_admin' user_id=user.name %}" class="btn btn-success mt-2">REVOKE ADMIN</a>
             {% endif %}
         </div>
         <div class="flex-grow-1 m-2">

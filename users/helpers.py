@@ -4,6 +4,7 @@ from django.core.cache import cache
 import flag
 import synapse_admin
 from django.conf import settings
+from django.contrib import messages
 
 from project.helpers import get_download_url_for_media, assemble_mxc_url
 
@@ -63,7 +64,7 @@ def load_users(access_token: str, server_name: str) -> None:
     for user in user_manager.lists():
         users[user['name']] = {
             'name': user['name'],
-            'name_without_server_name_ending': user['name'][:-(len(settings.MATRIX_DOMAIN)+1)],
+            'name_without_server_name_ending': user['name'][:-(len(settings.MATRIX_DOMAIN) + 1)],
             'display_name': user['displayname'],
             'is_admin': user['admin'],
             'is_deactivated': user['deactivated'],
@@ -87,3 +88,103 @@ def load_users(access_token: str, server_name: str) -> None:
 
     cache.set(settings.CACHED_USERS_UPDATED_AT, datetime.now(), 60 * 60 * 60 * 24)
     cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)
+
+
+def deactivate_user(access_token: str, server_name: str, user_id: str) -> bool:
+    """
+    Deactivate user in the server.
+    """
+
+    user_manager: synapse_admin.User = synapse_admin.User(
+        server_addr=server_name,
+        server_port=443,
+        access_token=access_token,
+        server_protocol='https://'
+    )
+
+    result: bool = user_manager.deactivate(userid=user_id)
+
+    # Change cached data if deactivation will be successful
+    if result:
+        users: dict = cache.get(settings.CACHED_USERS)
+
+        users[user_id]['is_deactivated'] = True
+
+        cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)
+
+    return result
+
+
+def activate_user(access_token: str, server_name: str, user_id: str, new_password: str) -> bool:
+    """
+    Activate user in the server.
+    """
+
+    user_manager: synapse_admin.User = synapse_admin.User(
+        server_addr=server_name,
+        server_port=443,
+        access_token=access_token,
+        server_protocol='https://'
+    )
+
+    result: bool = user_manager.reactivate(userid=user_id, password=new_password)
+
+    # Change cached data if reactivation will be successful
+    if result:
+        users: dict = cache.get(settings.CACHED_USERS)
+
+        users[user_id]['is_deactivated'] = False
+
+        cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)
+
+    return result
+
+
+def set_admin(access_token: str, server_name: str, user_id: str) -> bool:
+    """
+    Set admin of the server.
+    """
+
+    user_manager: synapse_admin.User = synapse_admin.User(
+        server_addr=server_name,
+        server_port=443,
+        access_token=access_token,
+        server_protocol='https://'
+    )
+
+    result: bool = user_manager.set_admin(userid=user_id, activate=True)[0]
+
+    # Change cached data if admin access has been granted
+    if result:
+        users: dict = cache.get(settings.CACHED_USERS)
+
+        users[user_id]['is_admin'] = True
+
+        cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)
+
+    return result
+
+
+def revoke_admin(access_token: str, server_name: str, user_id: str) -> bool:
+    """
+    Revoke admin of the server.
+    """
+
+    user_manager: synapse_admin.User = synapse_admin.User(
+        server_addr=server_name,
+        server_port=443,
+        access_token=access_token,
+        server_protocol='https://'
+    )
+
+    result: bool = user_manager.set_admin(userid=user_id, activate=False)[0]
+
+    # Change cached data if admin access has been revoked
+    if result:
+        users: dict = cache.get(settings.CACHED_USERS)
+
+        users[user_id]['is_admin'] = False
+
+        cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)
+
+    return result
