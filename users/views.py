@@ -44,7 +44,7 @@ class UserView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         user_id = self.kwargs['user_id']
-        user = cache.get('users', {}).get(user_id, None)
+        user = cache.get(settings.CACHED_USERS, {}).get(user_id, None)
         if user is None:
             raise Http404('User not found.')
 
