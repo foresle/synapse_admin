@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'dashboard.apps.DashboardConfig',
     'server_notices.apps.ServerNoticesConfig',
+    'rooms.apps.RoomsConfig',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +130,9 @@ SESSION_CACHE_ALIAS = 'default'
 CACHED_USERS: str = 'users'
 CACHED_USERS_UPDATED_AT: str = 'users_updated_at'
 
+CACHED_ROOMS: str = 'rooms'
+CACHED_ROOMS_UPDATED_AT: str = 'rooms_updated_at'
+
 CACHED_SERVER_MAP: str = 'server_map'
 CACHED_SERVER_MAP_UPDATED_AT: str = 'server_map_updated_at'
 
@@ -139,6 +143,10 @@ CACHED_MEDIA_STATISTICS_UPDATED_AT: str = 'media_statistics_updated_at'
 CELERY_BEAT_SCHEDULE = {
     'update_users_info_every_30m': {
         'task': 'users.tasks.update_users_info',
+        'schedule': 60 * 30
+    },
+    'update_rooms_info_every_30m': {
+        'task': 'rooms.tasks.update_rooms_info',
         'schedule': 60 * 30
     },
     'update_media_statistics_info_every_1h': {

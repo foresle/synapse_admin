@@ -1,0 +1,58 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div class="py-2">
+        <div class="d-flex justify-content-center">
+            <nav>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1"> << </a></li>
+                        <li class="page-item"><a class="page-link"
+                                                 href="?page={{ page_obj.previous_page_number }}"><</a></li>
+                    {% endif %}
+                    <li class="page-item"><a class="page-link" href="">{{ page_obj.number }}
+                        of {{ page_obj.paginator.num_pages }}</a></li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">></a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                            >> </a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-striped">
+                <caption>Total rooms: {{ total_rooms }}</caption>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>JOINED MEMBERS</th>
+                    <th>ENCRYPTION</th>
+                    <th>FEDERATABLE</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for room in rooms %}
+                    <tr>
+                        <th><a href="{% url 'rooms:detail' room_id=room.room_id %}" class="link-light">{{ room.room_id }}</a></th>
+                        <td>{{ room.name|truncatechars:24 }}</td>
+                        <td>{{ room.joined_members }}, {{ room.joined_local_members }} them is local</td>
+                        <td>{% if room.encryption %} Yes {% else %} No {% endif %}</td>
+                        <td>{% if room.federatable %} Yes {% else %} No {% endif %}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

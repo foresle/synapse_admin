@@ -4,7 +4,6 @@ from django.core.cache import cache
 import flag
 import synapse_admin
 from django.conf import settings
-from django.contrib import messages
 
 from project.helpers import get_download_url_for_media, assemble_mxc_url
 

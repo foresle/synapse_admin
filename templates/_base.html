@@ -29,6 +29,9 @@
                     <li class="nav-item"><a href="{% url 'users:list' %}"
                                             class="nav-link {% if users_page_active %} active {% endif %} ">Users</a>
                     </li>
+                    <li class="nav-item"><a href="{% url 'rooms:list' %}"
+                                            class="nav-link {% if rooms_page_active %} active {% endif %} ">Rooms</a>
+                    </li>
                     <li class="nav-item"><a href="{% url 'server_notices:send' %}"
                                             class="nav-link {% if server_notices_page_active %} active {% endif %} ">Server
                         notices</a>

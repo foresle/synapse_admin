@@ -1,0 +1,34 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <div class="my-2 p-2 d-flex flex-wrap justify-content-center">
+        <div class="flex-grow-1 m-2">
+            <ul class="list-group">
+                <li class="list-group-item text-center">INFO</li>
+                <li class="list-group-item">ID: {{ room.room_id }}</li>
+                <li class="list-group-item">Name: {{ room.name }}</li>
+                <li class="list-group-item">Joined members: {{ room.joined_members }}</li>
+                <li class="list-group-item">Joined local members: {{ room.joined_local_members }}</li>
+                <li class="list-group-item">Encryption: {% if room.encryption %} Yes {% else %} No {% endif %}</li>
+                <li class="list-group-item">Federatable: {% if room.federatable %} Yes {% else %} No {% endif %}</li>
+                <li class="list-group-item">Version: {{ room.version }}</li>
+                <li class="list-group-item">Creator: {{ room.creator }}</li>
+                <li class="list-group-item">Public: {{ room.public }}</li>
+                {% if room.local_members %}
+                    <li class="list-group-item text-center">LOCAL MEMBERS</li>
+                    {% for member in room.local_members %}
+                        <li class="list-group-item"><a href="{% url 'users:detail' user_id=member %}"
+                                                       class="link-dark">{{ member }}</a></li>
+                    {% endfor %}
+                {% endif %}
+                {% if room.global_members %}
+                    <li class="list-group-item text-center">GLOBAL MEMBERS</li>
+                    {% for member in room.global_members %}
+                        <li class="list-group-item"><a href="https://matrix.to/#/{{ member }}"
+                                                       class="link-dark">{{ member }}</a></li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
