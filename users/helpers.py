@@ -60,7 +60,7 @@ def load_users(access_token: str, server_name: str) -> None:
 
     users: dict = {}
 
-    for user in user_manager.lists():
+    for user in user_manager.lists(limit=1000000):
         users[user['name']] = {
             'name': user['name'],
             'name_without_server_name_ending': user['name'][:-(len(settings.MATRIX_DOMAIN) + 1)],
