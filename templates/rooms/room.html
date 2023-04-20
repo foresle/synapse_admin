@@ -2,6 +2,12 @@
 
 {% block content %}
     <div class="my-2 p-2 d-flex flex-wrap justify-content-center">
+        <div class="flex-shrink-0 m-2 d-flex flex-column">
+            <img style="object-fit: cover"
+                 src="{{ room.avatar_url|default:'https://cdn3.emoji.gg/emojis/9889-pain.gif' }}" alt="{{ room.name }}"
+                 class="rounded text-light bg-light"
+                 width="200px" height="200px">
+        </div>
         <div class="flex-grow-1 m-2">
             <ul class="list-group">
                 <li class="list-group-item text-center">INFO</li>
