@@ -4,7 +4,6 @@ from django.core.cache import cache
 import flag
 import synapse_admin
 from django.conf import settings
-from django.contrib import messages
 
 from project.helpers import get_download_url_for_media, assemble_mxc_url
 
@@ -61,7 +60,7 @@ def load_users(access_token: str, server_name: str) -> None:
 
     users: dict = {}
 
-    for user in user_manager.lists():
+    for user in user_manager.lists(limit=1000000):
         users[user['name']] = {
             'name': user['name'],
             'name_without_server_name_ending': user['name'][:-(len(settings.MATRIX_DOMAIN) + 1)],

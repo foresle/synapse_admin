@@ -5,6 +5,7 @@ from django.core.cache import cache
 from django.conf import settings
 from project.decorators import check_auth
 from users.helpers import load_users
+from rooms.helpers import load_rooms
 from .helpers import load_media_statistics, load_server_map, convert_size
 import requests
 
@@ -24,6 +25,15 @@ class DashboardView(TemplateView):
 
         if cached_users_updated_at is None:
             load_users(
+                server_name=settings.MATRIX_DOMAIN,
+                access_token=settings.MATRIX_ADMIN_TOKEN
+            )
+
+        # Checking last updating information about rooms
+        cached_rooms_updated_at = cache.get(settings.CACHED_ROOMS_UPDATED_AT, None)
+
+        if cached_rooms_updated_at is None:
+            load_rooms(
                 server_name=settings.MATRIX_DOMAIN,
                 access_token=settings.MATRIX_ADMIN_TOKEN
             )

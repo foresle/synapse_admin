@@ -22,4 +22,4 @@ def get_download_url_for_media(media_id: str, server_name: str | None = None, ac
     if access_token is None:
         access_token = settings.MATRIX_ADMIN_TOKEN
 
-    return f'https://{server_name}/_matrix/media/v3/download/{server_name}/{media_id}?access_token={access_token}'
+    return f'https://{settings.MATRIX_DOMAIN}/_matrix/media/v3/download/{server_name}/{media_id}?access_token={access_token}'
