@@ -6,6 +6,7 @@ import synapse_admin
 from django.conf import settings
 
 from project.helpers import get_download_url_for_media, assemble_mxc_url
+from dashboard.helpers import load_media_statistics
 
 
 def get_country_by_ip(ip: str) -> str:
@@ -87,6 +88,9 @@ def load_users(access_token: str, server_name: str) -> None:
 
     cache.set(settings.CACHED_USERS_UPDATED_AT, datetime.now(), 60 * 60 * 60 * 24)
     cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)
+
+    # Also update media statistics
+    load_media_statistics(access_token=access_token, server_name=server_name)
 
 
 def deactivate_user(access_token: str, server_name: str, user_id: str) -> bool:
