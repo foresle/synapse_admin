@@ -139,6 +139,8 @@ CACHED_SERVER_MAP_UPDATED_AT: str = 'server_map_updated_at'
 CACHED_MEDIA_STATISTICS: str = 'media_statistics'
 CACHED_MEDIA_STATISTICS_UPDATED_AT: str = 'media_statistics_updated_at'
 
+CACHED_OPERATIONS_MESSAGES: str = 'operations_messages'
+
 # CELERY
 CELERY_BEAT_SCHEDULE = {
     'update_users_info_every_30m': {

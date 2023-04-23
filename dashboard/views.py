@@ -83,6 +83,8 @@ class DashboardView(TemplateView):
 
         context['dashboard_page_active'] = True
 
+        context['operations'] = list(reversed(cache.get(settings.CACHED_OPERATIONS_MESSAGES, [])))
+
         return context
 
 

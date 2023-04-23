@@ -72,6 +72,35 @@
                 The amount of memory used: Error
             {% endif %}
         </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-striped">
+                <caption>Executed tasks.</caption>
+                <thead>
+                <tr>
+                    <th>TASK</th>
+                    <th>EXECUTED AT</th>
+                    <th>SPENT TIME</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if operations %}
+                    {% for operation in operations %}
+                        <tr>
+                            <td>{{ operation.name }}</td>
+                            <td>{{ operation.made_at }}</td>
+                            <td>{{ operation.spent_time }} seconds</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
 

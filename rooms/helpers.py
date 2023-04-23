@@ -4,9 +4,10 @@ from django.conf import settings
 from django.core.cache import cache
 from synapse_admin.base import SynapseException
 
-from project.helpers import assemble_mxc_url, get_download_url_for_media
+from project.helpers import assemble_mxc_url, get_download_url_for_media, spent_time_counter
 
 
+@spent_time_counter
 def load_rooms(access_token: str, server_name: str) -> None:
     """
     Load rooms and cache it to redis.

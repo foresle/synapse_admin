@@ -5,7 +5,7 @@ import flag
 import synapse_admin
 from django.conf import settings
 
-from project.helpers import get_download_url_for_media, assemble_mxc_url
+from project.helpers import get_download_url_for_media, assemble_mxc_url, spent_time_counter
 from dashboard.helpers import load_media_statistics
 
 
@@ -47,6 +47,7 @@ def get_last_seen_info(access_token: str, server_name: str, user_id: str) -> dic
     return last_seen
 
 
+@spent_time_counter
 def load_users(access_token: str, server_name: str) -> None:
     """
     Load users and cache it to redis.
@@ -93,6 +94,7 @@ def load_users(access_token: str, server_name: str) -> None:
     load_media_statistics(access_token=access_token, server_name=server_name)
 
 
+@spent_time_counter
 def deactivate_user(access_token: str, server_name: str, user_id: str) -> bool:
     """
     Deactivate user in the server.
@@ -118,6 +120,7 @@ def deactivate_user(access_token: str, server_name: str, user_id: str) -> bool:
     return result
 
 
+@spent_time_counter
 def activate_user(access_token: str, server_name: str, user_id: str, new_password: str) -> bool:
     """
     Activate user in the server.
@@ -143,6 +146,7 @@ def activate_user(access_token: str, server_name: str, user_id: str, new_passwor
     return result
 
 
+@spent_time_counter
 def set_admin(access_token: str, server_name: str, user_id: str) -> bool:
     """
     Set admin of the server.
@@ -168,6 +172,7 @@ def set_admin(access_token: str, server_name: str, user_id: str) -> bool:
     return result
 
 
+@spent_time_counter
 def revoke_admin(access_token: str, server_name: str, user_id: str) -> bool:
     """
     Revoke admin of the server.
