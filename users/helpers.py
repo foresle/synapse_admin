@@ -25,7 +25,8 @@ def get_last_seen_info(access_token: str, server_name: str, user_id: str) -> dic
     last_seen: dict = {
         'last_seen_ip': 'Unknown',
         'last_seen_at': 'Unknown',
-        'last_seen_country': 'Unknown'
+        'last_seen_country': 'Unknown',
+        'last_seen_user_agent': 'Unknown'
     }
 
     user_manager: synapse_admin.User = synapse_admin.User(
@@ -41,7 +42,8 @@ def get_last_seen_info(access_token: str, server_name: str, user_id: str) -> dic
         last_seen = {
             'last_seen_ip': active_sessions[0]['ip'],
             'last_seen_at': datetime.fromtimestamp(active_sessions[0]['last_seen'] / 1000),
-            'last_seen_country': get_country_by_ip(active_sessions[0]['ip'])
+            'last_seen_country': get_country_by_ip(active_sessions[0]['ip']),
+            'last_seen_user_agent': active_sessions[0]['user_agent']
         }
 
     return last_seen

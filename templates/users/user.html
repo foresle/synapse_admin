@@ -26,6 +26,7 @@
                 <li class="list-group-item">Created at: {{ user.created_at }}</li>
                 <li class="list-group-item">Last seen IP: {{ user.last_seen_ip }} - {{ user.last_seen_country }}</li>
                 <li class="list-group-item">Last seen at: {{ user.last_seen_at }}</li>
+                <li class="list-group-item">Last seen user agent: {{ user.last_seen_user_agent }}</li>
                 <li class="list-group-item">Is admin: {% if user.is_admin %} Yes {% else %} No {% endif %}</li>
                 <li class="list-group-item">Is deactivated: {% if user.is_deactivated %} Yes {% else %}
                     No {% endif %}</li>
