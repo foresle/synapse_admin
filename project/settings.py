@@ -139,6 +139,8 @@ CACHED_SERVER_MAP_UPDATED_AT: str = 'server_map_updated_at'
 CACHED_MEDIA_STATISTICS: str = 'media_statistics'
 CACHED_MEDIA_STATISTICS_UPDATED_AT: str = 'media_statistics_updated_at'
 
+CACHED_OPERATIONS_MESSAGES: str = 'operations_messages'
+
 # CELERY
 CELERY_BEAT_SCHEDULE = {
     'update_users_info_every_30m': {
@@ -148,10 +150,6 @@ CELERY_BEAT_SCHEDULE = {
     'update_rooms_info_every_30m': {
         'task': 'rooms.tasks.update_rooms_info',
         'schedule': 60 * 30
-    },
-    'update_media_statistics_info_every_1h': {
-        'task': 'dashboard.tasks.update_media_statistics_info',
-        'schedule': 60 * 60
     },
     'update_server_map_every_12h': {
         'task': 'users.tasks.dashboard.tasks.update_server_map',

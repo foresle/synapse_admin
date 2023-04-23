@@ -19,7 +19,7 @@
                 <li class="list-group-item">Federatable: {% if room.federatable %} Yes {% else %} No {% endif %}</li>
                 <li class="list-group-item">Version: {{ room.version }}</li>
                 <li class="list-group-item">Creator: {{ room.creator }}</li>
-                <li class="list-group-item">Public: {{ room.public }}</li>
+                <li class="list-group-item">Public: {% if room.public %} Yes {% else %} No {% endif %}</li>
                 {% if room.local_members %}
                     <li class="list-group-item text-center">LOCAL MEMBERS</li>
                     {% for member in room.local_members %}

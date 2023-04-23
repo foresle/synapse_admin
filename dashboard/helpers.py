@@ -1,11 +1,12 @@
 import datetime
 import json
-
 import synapse_graph as synapse_graph
 from django.core.cache import cache
 import synapse_admin
 import math
 from django.conf import settings
+
+from project.helpers import spent_time_counter
 
 
 def convert_size(size_bytes: int):
@@ -19,6 +20,7 @@ def convert_size(size_bytes: int):
     return '%s %s' % (s, size_name[i])
 
 
+@spent_time_counter
 def load_media_statistics(access_token: str, server_name: str) -> None:
     media_manager: synapse_admin.Media = synapse_admin.Media(
         server_addr=server_name,
@@ -44,6 +46,7 @@ def load_media_statistics(access_token: str, server_name: str) -> None:
     cache.set(settings.CACHED_USERS, users, 60 * 60 * 60 * 24)  # 1 day
 
 
+@spent_time_counter
 def load_server_map(access_token: str, server_name: str) -> None:
     try:
         graph = synapse_graph.SynapseGraph(
