@@ -1,5 +1,7 @@
 # synapse_admin
 
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
 "synapse_admin" is a web-based administration tool built using Django framework for managing Matrix Synapse servers. 
 
 It provides an intuitive interface for managing user accounts, rooms, ~~permissions~~, and other configurations. 
